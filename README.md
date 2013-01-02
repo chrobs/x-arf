@@ -6,9 +6,9 @@ send mail in extended Abuse Reporting Format (x-arf) v0.1. For more information 
 written for/tested with ruby-1.8.6-p420 and ruby-1.8.5 (2006-08-25)
 
 ## infos
-* instantiate regular with Xarf.new(opt) where opt is a ruby hash with the following parameters:
+instantiate regular with Xarf.new(opt) where opt is a ruby hash with the following parameters:
   * **:mail** [HASH] - ruby Hash with the parameters:
-    - **:to** [STRING] - list of recipients, comma separated
+    * **:to** [STRING] - list of recipients, comma separated
     - **:from** [STRING]
     - **:reply_to** [STRING]
     - **:cc** [STRING] - list of CC-recipients, comma separated
@@ -30,4 +30,9 @@ written for/tested with ruby-1.8.6-p420 and ruby-1.8.5 (2006-08-25)
     - **"Version"** [STRING], optionally - version of specification (current is 0.1)
     - **"Occurrences"** [STRING], optionally -  Though each incident should be reported on its own, this field may be used to consolidate incidents which are strongly related to each other, e.g. "14"
     - **"TLP"** [STRING], optionally - may be used to indicate the sensitivity of the information in the report: red, amber, green or white
-  * **:logs** [ENUMERATOR] - any object which supports "each" method, each inner element represents one log line and supports "to\_s". For example an array with Strings.
+  * **:logs** [ENUMERATOR] - each inner element represents one log line and supports "to\_s". For example an array with Strings.
+
+####classes
+* [HASH] has to be a ruby Hash or at least an object which implements the keywords
+* [STRING] has to be a ruby String or any object which implements the "to\_s" method
+* [ENUMERATOR] may be any object which supports the "each" method
