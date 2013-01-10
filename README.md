@@ -5,16 +5,18 @@ send mail in extended Abuse Reporting Format (x-arf) v0.1. For more information 
 
 written for/tested with ruby-1.8.6-p420 and ruby-1.8.5 (2006-08-25)
 
-## infos
-instantiate regular with Xarf.new(opt) where opt is a ruby hash with the following parameters:
+# infos
+
+## instantiate regular with XarfMail.new(opt) where opt is a ruby hash with the following parameters:
   * **:mail** [HASH] - ruby Hash with the parameters:
-    * **:to** [STRING] - list of recipients, comma separated
+    - **:to** [STRING] - list of recipients, comma separated
     - **:from** [STRING]
     - **:reply_to** [STRING]
     - **:cc** [STRING] - list of CC-recipients, comma separated
     - **:bcc** [STRING] - list of BCC-recipients, comma separated
     - **:errors_to** [STRING]
     - **:subject** [STRING]
+    - **:extras** [HASH] - hash with mail header extra fields (like {"x-original-to" => "me@mail.com"} )
   * **:template** [STRING] - full name of template file within "mail-views/" folder
   * **:report** [HASH] - ruby hash with parameters:
     - **"Reported-From"** [STRING], mandatory - needs to contain the sending e-mail address
@@ -32,7 +34,17 @@ instantiate regular with Xarf.new(opt) where opt is a ruby hash with the followi
     - **"TLP"** [STRING], optionally - may be used to indicate the sensitivity of the information in the report: red, amber, green or white
   * **:logs** [ENUMERATOR] - each inner element represents one log line and supports "to\_s". For example an array with Strings.
 
-####classes
+###classes
 * [HASH] has to be a ruby Hash or at least an object which implements the keywords
 * [STRING] has to be a ruby String or any object which implements the "to\_s" method
 * [ENUMERATOR] may be any object which supports the "each" method
+
+### instance methods
+* **build_mail** - builds header + mime-parts 1-3 and returns the complete mail object
+* **send_mail(mail)** - tries to send mail object via smtp.sendmail at localhost
+* **build_header** - returns mail-header object (text)
+* **build_first** - returns first mime part object (JSON report.txt)
+* **build_second** - returns second mime part object (logs)
+
+### class methods
+* **get_incident** - returns the incident hash given at initialization (needed for ERB-template file)
