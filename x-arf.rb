@@ -4,7 +4,7 @@
 #
 # author: Sebastian N., github@tempo-tm.de
 # created: 2011-03-24
-# modified: 2013-01-02
+# modified: 2013-01-10
 #
 
 require 'rubygems'
@@ -12,6 +12,7 @@ require 'tmail'
 require 'erb'
 require 'net/smtp'
 require 'yaml'
+require 'date'
 
 class XarfMail
 
@@ -61,16 +62,20 @@ class XarfMail
         end
     end #}}}
 
-    def build_header
+    def build_header opt
         #{{{
         mail = TMail::Mail.new
         mail["X-ARF"] = "YES"
         mail["Auto-Submitted"] = "auto-generated"
         mail["errors-to"] = @@incident[:mail][:errors_to]
         mail.date = Time.new
-        mail.content_type = "multipart/mixed"
-        mail.set_content_type('multipart', 'mixed', {'charset' => 'utf8', 'boundary' => 'Abuse'})
+        #mail.set_content_type('multipart', 'mixed', {'charset' => 'utf8', 'boundary' => 'Abuse'})
         #mail.transfer_encoding = "7bit"
+
+        # apply header fields in opt
+        opt.each do |k,v|
+          mail[k] = v
+        end
         mail.mime_version = "1.0"
 
         mail.from = @@incident[:mail][:from]
@@ -78,8 +83,12 @@ class XarfMail
         mail.cc = @@incident[:mail][:cc]
         mail.bcc = @@incident[:mail][:bcc]
         mail.reply_to = @@incident[:mail][:reply_to]
-
         mail.subject = @@incident[:mail][:subject]
+
+        # header extra fields
+        @@incident[:mail][:extras].each do |k,v|
+          mail[k] = v
+        end
         return mail
     end #}}}
 
@@ -125,11 +134,27 @@ class XarfMail
         return third
     end #}}}
 
+    def get_header
+    #{{{
+      return build_header("content-type" => "multipart/mixed")
+    end #}}}
+
+    def get_mime_parts
+    #{{{
+      mail = TMail::Mail.new
+      mail.parts.push(build_first)
+      mail.parts.push(build_second)
+      mail.parts.push(build_third)
+      return mail
+    end #}}}
+
     def build_mail
-        mail = build_header
+    #{{{
+        mail = build_header("content-type" => "multipart/mixed")
         mail.parts.push(build_first)
         mail.parts.push(build_second)
         mail.parts.push(build_third)
         return mail
-    end
+    end #}}}
+
 end
